@@ -1,0 +1,8 @@
+version: '3'
+services:
+  linux:
+    build:
+      context: .
+      dockerfile: Dockerfile.linux
+    volumes: 
+      - ./container_volume:/usr/local/share/host

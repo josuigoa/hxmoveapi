@@ -1,0 +1,5 @@
+common.hxml
+-D ammer.hl.hlInclude=/usr/local/include
+-D ammer.hl.build=native/lib
+-D ammer.hl.output=bin/
+-hl bin/hxmoveapi.hl

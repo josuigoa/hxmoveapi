@@ -1,0 +1,12 @@
+all: libpsmoveapi.dylib hxmoveapi.o
+
+libpsmoveapi.dylib: psmoveapi.c
+	gcc -dynamiclib -o libpsmoveapi.dylib hxmoveapi.cpp
+
+libhxmoveapi.so: hxmoveapi.o
+	gcc -shared -fPIC -o lib/libhxmoveapi.so lib/hxmoveapi.o -lc -L lib/osx -lpsmoveapi
+
+hxmoveapi.o: hxmoveapi.cpp
+	g++ -c -fPIC -o lib/hxmoveapi.o hxmoveapi.cpp -fPIC
+
+.PHONY: all
