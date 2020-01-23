@@ -14,11 +14,11 @@ LIB_EXPORT bool init();
 
 LIB_EXPORT char* get_serial();
 
-// LIB_EXPORT void set_led(int r, int g, int b);
+LIB_EXPORT void set_led(int r, int g, int b);
 
-// LIB_EXPORT void set_rumble(int rumble);
+LIB_EXPORT void set_rumble(int rumble);
 
-// LIB_EXPORT unsigned int get_buttons();
+LIB_EXPORT unsigned int get_buttons();
 
 #ifdef __cplusplus
 }

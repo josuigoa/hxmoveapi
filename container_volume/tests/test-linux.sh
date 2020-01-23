@@ -15,10 +15,3 @@ haxe build-hl.hxml \
 && mv native/lib/libhxmoveapi.so /usr/lib \
 && mv bin/ammer_hxmoveapi.hdll /usr/lib \
 && hl bin/hxmoveapi.hl
-
-# echo "testing cpp ..."
-# haxe build-cpp.hxml \
-# && (cd bin/cpp; LD_LIBRARY_PATH=../../native ./Main)
-
-# echo "testing eval ..."
-# LD_LIBRARY_PATH=native haxe -D "ammer.eval.hxDir=$TEST_HXDIR" build-eval.hxml

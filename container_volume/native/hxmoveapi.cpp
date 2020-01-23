@@ -34,7 +34,6 @@ LIB_EXPORT char* get_serial() {
 }
 
 LIB_EXPORT void set_led(int r, int g, int b) {
-    
     psmove_set_leds(move, r, g, b);
     psmove_update_leds(move);
 }
