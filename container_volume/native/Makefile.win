@@ -1,0 +1,9 @@
+all: hxmoveapi.dll
+
+hxmoveapi.dll: hxmoveapi.obj
+	cl /LD /MD /Felib\hxmoveapi.dll "lib\hxmoveapi.obj" "lib\win\psmoveapi.lib"
+
+hxmoveapi.obj: hxmoveapi.cpp
+	cl /c /MD /Folib\ hxmoveapi.cpp /I . /I $(HASHLINK)
+
+.PHONY: all

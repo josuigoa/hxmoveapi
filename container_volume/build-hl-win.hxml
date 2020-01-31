@@ -1,0 +1,3 @@
+build-hl.hxml
+-D ammer.hl.hlInclude=C:\hashlink\include
+-D ammer.hl.hlLibrary=C:\hashlink

@@ -6,3 +6,9 @@ services:
       dockerfile: Dockerfile.linux
     volumes: 
       - ./container_volume:/usr/local/share/host
+  win:
+    build:
+      context: .
+      dockerfile: Dockerfile.win
+    volumes: 
+      - ./container_volume:c:\host

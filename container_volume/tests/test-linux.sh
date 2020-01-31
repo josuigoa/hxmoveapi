@@ -4,7 +4,7 @@ echo "building native library ..."
 (cd native; make -f Makefile.linux)
 
 echo "testing hl ..."
-haxe build-hl.hxml \
+haxe build-hl-linux.hxml \
 && rm native/lib/hxmoveapi.o \
 && rm native/lib/ammer_hxmoveapi.hl.c \
 && rm native/lib/ammer_hxmoveapi.hl.o \

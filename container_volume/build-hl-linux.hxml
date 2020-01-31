@@ -1,0 +1,2 @@
+build-hl.hxml
+-D ammer.hl.hlInclude=/usr/local/include
