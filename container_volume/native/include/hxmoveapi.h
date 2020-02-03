@@ -12,6 +12,10 @@ extern "C" {
 
 LIB_EXPORT bool init();
 
+LIB_EXPORT int count_connected();
+
+LIB_EXPORT bool connect_by_id(int index);
+
 LIB_EXPORT char* get_serial();
 
 LIB_EXPORT void set_led(int r, int g, int b);

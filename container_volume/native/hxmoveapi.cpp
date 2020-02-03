@@ -11,17 +11,19 @@ extern "C" {
 PSMove *move;
 
 LIB_EXPORT bool init() {
+    return psmove_init(PSMOVE_CURRENT_VERSION);
+}
 
-    if (!psmove_init(PSMOVE_CURRENT_VERSION)) {
-        fprintf(stderr, "PS Move API init failed (wrong version?)\n");
-        exit(1);
-    }
-    
-    move = psmove_connect();
+LIB_EXPORT int count_connected() {
+    return psmove_count_connected();
+}
+
+LIB_EXPORT bool connect_by_id(int index) {
+    move = psmove_connect_by_id(index);
 
     if (move == NULL) {
-        printf("Could not connect to default Move controller.\n"
-               "Please connect one via USB or Bluetooth.\n");
+        printf("Could not connect to [%d] Move controller.\n"
+               "Please connect one via USB or Bluetooth.\n", index);
     }
     
     return move != NULL;

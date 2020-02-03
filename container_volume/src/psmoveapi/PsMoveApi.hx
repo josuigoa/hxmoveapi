@@ -20,8 +20,13 @@ enum abstract PsMoveButton(Int) {
 
 class PsMoveApi extends Library<"hxmoveapi"> {
 	
-	@:ammer.native("init")
 	public static function init():Bool;
+	
+	@:ammer.native("count_connected")
+	public static function countConnected():UInt;
+	
+	@:ammer.native("connect_by_id")
+	public static function connectById(index:UInt):Bool;
 	
 	@:ammer.native("get_serial")
 	public static function getSerial():String;

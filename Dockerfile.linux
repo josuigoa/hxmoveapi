@@ -39,7 +39,7 @@ RUN set -ex \
 	&& tar -xC /usr/src/psmoveapi --strip-components=1 -f psmoveapi.tar.gz \
     && rm psmoveapi.tar.gz \
     && mkdir -p /usr/local/share/host/native/psmoveapi/include \
-    && mkdir -p /usr/local/share/host/native/lib \
+    && mkdir -p /usr/local/share/host/native/lib/linux \
 	&& cp -R /usr/src/psmoveapi/include /usr/local/share/host/native/psmoveapi/include \
     && cp /usr/src/psmoveapi/lib/* /usr/local/share/host/native/lib/linux \
     && rm -r /usr/src/psmoveapi \

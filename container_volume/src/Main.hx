@@ -3,10 +3,20 @@ import psmoveapi.PsMoveApi;
 class Main {
     
     static public function main() {
+        
         var inited = PsMoveApi.init();
         trace('inited: $inited');
+        if (!inited) {
+            trace('PS Move API init failed (wrong version?)');
+            return;
+        }
         
-        if (!inited)
+        var connectedCount = PsMoveApi.countConnected();
+        trace('connectedCount: $connectedCount');
+        
+        var connected = PsMoveApi.connectById(0);
+        trace('connected: $connected');
+        if (!connected)
             return;
         
         var serial = PsMoveApi.getSerial();
