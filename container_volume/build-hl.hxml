@@ -1,4 +1,3 @@
 common.hxml
--D ammer.hl.build=native/lib
 -D ammer.hl.output=bin/
 -hl bin/hxmoveapi.hl

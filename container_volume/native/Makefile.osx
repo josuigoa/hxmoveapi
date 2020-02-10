@@ -1,10 +1,10 @@
 all: libhxmoveapi.dylib hxmoveapi.o
 
 libhxmoveapi.dylib: hxmoveapi.cpp
-	gcc -dynamiclib -o libhxmoveapi.dylib hxmoveapi.cpp
+	gcc -dynamiclib -o lib/osx/libhxmoveapi.dylib hxmoveapi.cpp -L lib/osx -lpsmoveapi
 
 libhxmoveapi.so: hxmoveapi.o
-	gcc -shared -fPIC -o lib/libhxmoveapi.so lib/hxmoveapi.o -lc -L lib/osx -lpsmoveapi
+	gcc -shared -fPIC -o lib/libhxmoveapi.so lib/hxmoveapi.o -lc
 
 hxmoveapi.o: hxmoveapi.cpp
 	g++ -c -fPIC -o lib/hxmoveapi.o hxmoveapi.cpp

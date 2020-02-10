@@ -1,0 +1,3 @@
+build-hl.hxml
+-D ammer.hl.build=native/lib/osx
+-D ammer.hl.hlInclude=/usr/local/include
