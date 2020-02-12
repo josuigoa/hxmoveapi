@@ -1,3 +1,4 @@
 build-hl.hxml
 -D ammer.hl.build=native/lib/linux
+-D ammer.lib.hxmoveapi.library=native/lib/linux
 -D ammer.hl.hlInclude=/usr/local/include

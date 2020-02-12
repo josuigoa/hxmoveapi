@@ -1,4 +1,5 @@
 build-hl.hxml
 -D ammer.hl.build=native/lib/win
+-D ammer.lib.hxmoveapi.library=native/lib/win
 -D ammer.hl.hlInclude=C:\hashlink\include
 -D ammer.hl.hlLibrary=C:\hashlink

@@ -10,4 +10,4 @@ haxe build-hl-osx.hxml \
 && rm native/lib/osx/ammer_hxmoveapi.hl.o \
 && rm native/lib/osx/ammer_hxmoveapi.hdll \
 && rm native/lib/osx/Makefile.hl.ammer \
-&& DYLD_LIBRARY_PATH=../../native/lib/osx hl bin/hxmoveapi.hl
+&& DYLD_LIBRARY_PATH=native/lib/osx hl bin/hxmoveapi.hl

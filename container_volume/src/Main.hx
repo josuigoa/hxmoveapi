@@ -29,7 +29,7 @@ class Main {
             return Std.int(Math.random() * 255);
         }
         
-        PsMoveApi.setLed(irand(), irand(), irand());
-        haxe.Timer.delay(() -> PsMoveApi.setLed(0, 0, 0), 1000);
+        PsMoveApi.setLed(0, 255, 0);
+        haxe.Timer.delay(() -> PsMoveApi.setLed(0, 0, 0), 3000);
     }
 }

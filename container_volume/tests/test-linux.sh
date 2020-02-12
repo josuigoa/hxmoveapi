@@ -10,8 +10,4 @@ haxe build-hl-linux.hxml \
 && rm native/lib/linux/ammer_hxmoveapi.hl.o \
 && rm native/lib/linux/ammer_hxmoveapi.hdll \
 && rm native/lib/linux/Makefile.hl.ammer \
-&& cp native/lib/linux/libpsmoveapi.so /usr/lib \
-&& cp native/lib/linux/libpsmoveapi_tracker.so /usr/lib \
-&& mv native/lib/libhxmoveapi.so /usr/lib \
-&& mv bin/ammer_hxmoveapi.hdll /usr/lib \
-&& hl bin/hxmoveapi.hl
+&& LD_LIBRARY_PATH=native/lib/osx hl bin/hxmoveapi.hl
