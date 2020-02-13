@@ -2,9 +2,11 @@ import psmoveapi.PsMoveApi;
 
 class Main {
     
+    static var move:PsMove;
+    
     static public function main() {
         
-        var inited = PsMoveApi.init();
+        var inited = PsMoveApi.init(1);
         trace('inited: $inited');
         if (!inited) {
             trace('PS Move API init failed (wrong version?)');
@@ -14,30 +16,41 @@ class Main {
         var connectedCount = PsMoveApi.countConnected();
         trace('connectedCount: $connectedCount');
         
-        var connected = PsMoveApi.connectById(0);
-        trace('connected: $connected');
-        if (!connected)
+        move = PsMoveApi.connectById(0);
+        trace('connected: $move');
+        if (move == null)
             return;
         
-        var serial = PsMoveApi.getSerial();
+        var serial = move.getSerial();
         trace('serial $serial');
         
-        PsMoveApi.setRumble(100);
-        haxe.Timer.delay(() -> PsMoveApi.setRumble(0), 1000);
+        move.setRumble(100);
+        haxe.Timer.delay(() -> {
+            move.setRumble(0);
+            move.updateLeds();
+        }, 1000);
         
         inline function irand() {
             return Std.int(Math.random() * 255);
         }
         
-        PsMoveApi.setLed(0, 255, 0);
-        haxe.Timer.delay(() -> PsMoveApi.setLed(0, 0, 0), 3000);
+        move.setLeds(0, 255, 0);
+        haxe.Timer.delay(() ->{
+            move.setLeds(0, 0, 0);
+            move.updateLeds();
+        }, 3000);
+        
+        move.updateLeds();
         
         haxe.MainLoop.add(update);
     }
     
     static function update() {
         
-        var b = PsMoveApi.getButtons();
+        if (move.poll() == 0)
+            return;
+        
+        var b = move.getButtons();
         
         if (b != 0) {
             
@@ -57,16 +70,18 @@ class Main {
                 g = 192;
                 b = 203;
             }
-            PsMoveApi.setLed(r, g, b);
+            move.setLeds(r, g, b);
+            
+            move.updateLeds();
             
             if (b & PsMoveButton.MOVE > 0) {
-                var axis = PsMoveApi.getAccelerometer();
+                var axis = move.getAccelerometer();
                 trace('accel: [${axis.getX()}, ${axis.getY()}, ${axis.getZ()}]');
                 
-                axis = PsMoveApi.getGyroscope();
+                axis = move.getGyroscope();
                 trace('accel: [${axis.getX()}, ${axis.getY()}, ${axis.getZ()}]');
                 
-                axis = PsMoveApi.getMagnetometer();
+                axis = move.getMagnetometer();
                 trace('accel: [${axis.getX()}, ${axis.getY()}, ${axis.getZ()}]');
             }
         }

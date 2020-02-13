@@ -2,57 +2,12 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include "include/hxmoveapi.h"
-#include "include/psmoveapi/psmove.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-PSMove *move;
-
-LIB_EXPORT bool init() {
-    return psmove_init(PSMOVE_CURRENT_VERSION);
-}
-
-LIB_EXPORT int count_connected() {
-    return psmove_count_connected();
-}
-
-LIB_EXPORT bool connect_by_id(int index) {
-    move = psmove_connect_by_id(index);
-
-    if (move == NULL) {
-        printf("Could not connect to [%d] Move controller.\n"
-               "Please connect one via USB or Bluetooth.\n", index);
-    }
-    
-    return move != NULL;
-}
-
-LIB_EXPORT char* get_serial() {
-
-    char *serial = psmove_get_serial(move);
-    return serial;
-}
-
-LIB_EXPORT void set_led(int r, int g, int b) {
-    psmove_set_leds(move, r, g, b);
-    psmove_update_leds(move);
-}
-
-LIB_EXPORT void set_rumble(int rumble) {
-    psmove_set_rumble(move, rumble);
-    psmove_update_leds(move);
-}
-
-LIB_EXPORT unsigned int get_buttons() {
-    if (psmove_poll(move)) {
-        return psmove_get_buttons(move);
-    }
-    return 0;
-}
-
-axis_data_ptr create_axis(int x, int y, int z) {
+LIB_EXPORT axis_data_ptr create_axis(int x, int y, int z) {
     axis_data_ptr ret = (axis_data_ptr)malloc(sizeof(axis_data));
 	ret->x = x;
 	ret->y = y;
@@ -61,7 +16,11 @@ axis_data_ptr create_axis(int x, int y, int z) {
 	return ret;
 }
 
-LIB_EXPORT axis_data_ptr get_accelerometer() {
+LIB_EXPORT void free_psmove(PSMove *move) {
+    free(move);
+}
+
+LIB_EXPORT axis_data_ptr get_accelerometer(PSMove *move) {
     int x, y, z;
     if (psmove_poll(move)) {
         psmove_get_accelerometer(move, &x, &y, &z);
@@ -70,7 +29,7 @@ LIB_EXPORT axis_data_ptr get_accelerometer() {
     return create_axis(x, y, z);
 }
 
-LIB_EXPORT axis_data_ptr get_gyroscope() {
+LIB_EXPORT axis_data_ptr get_gyroscope(PSMove *move) {
     int x, y, z;
     if (psmove_poll(move)) {
         psmove_get_gyroscope(move, &x, &y, &z);
@@ -79,7 +38,7 @@ LIB_EXPORT axis_data_ptr get_gyroscope() {
     return create_axis(x, y, z);
 }
 
-LIB_EXPORT axis_data_ptr get_magnetometer() {
+LIB_EXPORT axis_data_ptr get_magnetometer(PSMove *move) {
     int x, y, z;
     if (psmove_poll(move)) {
         psmove_get_magnetometer(move, &x, &y, &z);
