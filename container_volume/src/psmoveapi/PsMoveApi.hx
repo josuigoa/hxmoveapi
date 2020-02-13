@@ -4,7 +4,7 @@ import ammer.Library;
 import haxe.io.Bytes;
 import ammer.ffi.*;
 
-enum abstract PsMoveButton(Int) {
+enum abstract PsMoveButton(UInt) to UInt{
 	var TRIANGLE = 1 << 4; /*!< Green triangle */
     var CIRCLE = 1 << 5; /*!< Red circle */
     var CROSS = 1 << 6; /*!< Blue cross */
@@ -39,4 +39,22 @@ class PsMoveApi extends Library<"hxmoveapi"> {
 	
 	@:ammer.native("get_buttons")
 	public static function getButtons():UInt;
+	
+	@:ammer.native("get_accelerometer")
+    public static function getAccelerometer():AxisData;
+	
+	@:ammer.native("get_gyroscope")
+    public static function getGyroscope():AxisData;
+	
+	@:ammer.native("get_magnetometer")
+    public static function getMagnetometer():AxisData;
+}
+
+class AxisData extends ammer.Pointer<"axis_data", PsMoveApi> {
+	@:ammer.native("axis_get_x")
+	public function getX(_:ammer.ffi.This):Int;
+	@:ammer.native("axis_get_y")
+	public function getY(_:ammer.ffi.This):Int;
+	@:ammer.native("axis_get_z")
+	public function getZ(_:ammer.ffi.This):Int;
 }

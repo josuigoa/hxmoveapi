@@ -51,6 +51,55 @@ LIB_EXPORT unsigned int get_buttons() {
     }
     return 0;
 }
+
+axis_data_ptr create_axis(int x, int y, int z) {
+    axis_data_ptr ret = (axis_data_ptr)malloc(sizeof(axis_data));
+	ret->x = x;
+	ret->y = y;
+	ret->z = z;
+    
+	return ret;
+}
+
+LIB_EXPORT axis_data_ptr get_accelerometer() {
+    int x, y, z;
+    if (psmove_poll(move)) {
+        psmove_get_accelerometer(move, &x, &y, &z);
+    }
+    
+    return create_axis(x, y, z);
+}
+
+LIB_EXPORT axis_data_ptr get_gyroscope() {
+    int x, y, z;
+    if (psmove_poll(move)) {
+        psmove_get_gyroscope(move, &x, &y, &z);
+    }
+    
+    return create_axis(x, y, z);
+}
+
+LIB_EXPORT axis_data_ptr get_magnetometer() {
+    int x, y, z;
+    if (psmove_poll(move)) {
+        psmove_get_magnetometer(move, &x, &y, &z);
+    }
+    
+    return create_axis(x, y, z);
+}
+
+LIB_EXPORT int axis_get_x(axis_data_ptr a) {
+    return a->x;
+}
+
+LIB_EXPORT int axis_get_y(axis_data_ptr a) {
+    return a->y;
+}
+
+LIB_EXPORT int axis_get_z(axis_data_ptr a) {
+    return a->z;
+}
+
 /*
 void __init()
 {
