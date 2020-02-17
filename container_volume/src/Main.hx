@@ -6,7 +6,10 @@ class Main {
     
     static public function main() {
         
-        var inited = PsMoveApi.init(1);
+        var currentVersion = PsMoveApi.VERSION_MAJOR << 16 |
+                            PsMoveApi.VERSION_MINOR << 8 |
+                            PsMoveApi.VERSION_PATCH << 0;
+        var inited = PsMoveApi.init(currentVersion);
         trace('inited: $inited');
         if (!inited) {
             trace('PS Move API init failed (wrong version?)');
@@ -18,7 +21,7 @@ class Main {
         
         move = PsMoveApi.connectById(0);
         trace('connected: $move');
-        if (move == null)
+        if (move.isNull())
             return;
         
         var serial = move.getSerial();
@@ -30,12 +33,8 @@ class Main {
             move.updateLeds();
         }, 1000);
         
-        inline function irand() {
-            return Std.int(Math.random() * 255);
-        }
-        
         move.setLeds(0, 255, 0);
-        haxe.Timer.delay(() ->{
+        haxe.Timer.delay(() -> {
             move.setLeds(0, 0, 0);
             move.updateLeds();
         }, 3000);

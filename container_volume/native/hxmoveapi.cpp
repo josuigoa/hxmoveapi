@@ -16,6 +16,10 @@ LIB_EXPORT axis_data_ptr create_axis(int x, int y, int z) {
 	return ret;
 }
 
+LIB_EXPORT bool psmove_is_null(PSMove *move) {
+    return move == NULL;
+}
+
 LIB_EXPORT void free_psmove(PSMove *move) {
     free(move);
 }

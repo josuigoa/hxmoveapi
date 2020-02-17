@@ -6,6 +6,10 @@ import ammer.ffi.*;
 
 class PsMoveApi extends Library<"hxmoveapi"> {
 	
+	@:ammer.native("PSMOVEAPI_VERSION_MAJOR") public static var VERSION_MAJOR:Int;
+	@:ammer.native("PSMOVEAPI_VERSION_MINOR") public static var VERSION_MINOR:Int;
+	@:ammer.native("PSMOVEAPI_VERSION_PATCH") public static var VERSION_PATCH:Int;
+	
 	@:ammer.native("psmove_init")
 	public static function init(v:UInt):Bool;
 	
@@ -24,6 +28,9 @@ class PsMoveApi extends Library<"hxmoveapi"> {
 }
 
 class PsMove extends ammer.Pointer<"PSMove", PsMoveApi> {
+	
+	@:ammer.native("psmove_is_null")
+	public function isNull(_:ammer.ffi.This):Bool;
 	
 	@:ammer.native("psmove_get_serial")
 	public function getSerial(_:ammer.ffi.This):String;
