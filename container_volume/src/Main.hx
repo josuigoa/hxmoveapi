@@ -16,30 +16,30 @@ class Main {
             return;
         }
         
-        var connectedCount = PsMoveApi.countConnected();
+        var connectedCount = PsMoveApi.count_connected();
         trace('connectedCount: $connectedCount');
         
-        move = PsMoveApi.connectById(0);
+        move = PsMoveApi.connect_by_id(0);
         trace('connected: $move');
         if (move.isNull())
             return;
         
-        var serial = move.getSerial();
+        var serial = move.get_serial();
         trace('serial $serial');
         
-        move.setRumble(100);
+        move.set_rumble(100);
         haxe.Timer.delay(() -> {
-            move.setRumble(0);
-            move.updateLeds();
+            move.set_rumble(0);
+            move.update_leds();
         }, 1000);
         
-        move.setLeds(0, 255, 0);
+        move.set_leds(0, 255, 0);
         haxe.Timer.delay(() -> {
-            move.setLeds(0, 0, 0);
-            move.updateLeds();
+            move.set_leds(0, 0, 0);
+            move.update_leds();
         }, 3000);
         
-        move.updateLeds();
+        move.update_leds();
         
         haxe.MainLoop.add(update);
     }
@@ -49,7 +49,7 @@ class Main {
         if (move.poll() == 0)
             return;
         
-        var b = move.getButtons();
+        var b = move.get_buttons();
         
         if (b != 0) {
             
@@ -69,19 +69,21 @@ class Main {
                 g = 192;
                 b = 203;
             }
-            move.setLeds(r, g, b);
+            move.set_leds(r, g, b);
             
-            move.updateLeds();
+            move.update_leds();
             
             if (b & PsMoveButton.MOVE > 0) {
-                var axis = move.getSensor(Accelerometer);
+                var axis = move.get_sensor(Accelerometer);
                 trace('accel: [${axis.getX()}, ${axis.getY()}, ${axis.getZ()}]');
                 
-                axis = move.getSensor(Gyroscope);
+                axis = move.get_sensor(Gyroscope);
                 trace('accel: [${axis.getX()}, ${axis.getY()}, ${axis.getZ()}]');
                 
-                axis = move.getSensor(Magnetometer);
+                axis = move.get_sensor(Magnetometer);
                 trace('accel: [${axis.getX()}, ${axis.getY()}, ${axis.getZ()}]');
+            } else if (b & PsMoveButton.T > 0) {
+                move.set_rumble(move.get_trigger());
             }
         }
     }

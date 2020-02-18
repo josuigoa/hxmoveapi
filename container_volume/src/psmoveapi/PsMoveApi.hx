@@ -4,20 +4,19 @@ import ammer.Library;
 import haxe.io.Bytes;
 import ammer.ffi.*;
 
+@:ammer.nativePrefix("psmove_")
 class PsMoveApi extends Library<"psmoveapi"> {
 	
 	@:ammer.native("PSMOVEAPI_VERSION_MAJOR") public static var VERSION_MAJOR:Int;
 	@:ammer.native("PSMOVEAPI_VERSION_MINOR") public static var VERSION_MINOR:Int;
 	@:ammer.native("PSMOVEAPI_VERSION_PATCH") public static var VERSION_PATCH:Int;
 	
-	@:ammer.native("psmove_init")
 	public static function init(v:UInt):Bool;
 	
-	@:ammer.native("psmove_count_connected")
-	public static function countConnected():UInt;
+	public static function count_connected():UInt;
 	
 	@:ammer.native("psmove_connect_by_id")
-	public static function connectById(index:UInt):PsMove;
+	public static function connect_by_id(index:UInt):PsMove;
 	
 	// I put this here because it seems that ammer ignores the
 	// ammer.Pointer classes that are not referenced here.
@@ -27,28 +26,29 @@ class PsMoveApi extends Library<"psmoveapi"> {
 	
 }
 
+@:ammer.nativePrefix("psmove_")
 class PsMove extends ammer.Pointer<"PSMove", PsMoveApi> {
 	
 	@:ammer.c.return("arg_0 == NULL")
 	public function isNull(_:ammer.ffi.This):Bool;
 	
-	@:ammer.native("psmove_get_serial")
-	public function getSerial(_:ammer.ffi.This):String;
+	public function get_serial(_:ammer.ffi.This):String;
 	
-	@:ammer.native("psmove_poll")
 	public function poll(_:ammer.ffi.This):UInt;
 	
-	@:ammer.native("psmove_set_leds")
-	public function setLeds(_:ammer.ffi.This, r:UInt, g:UInt, b:UInt):Void;
+	public function set_leds(_:ammer.ffi.This, r:UInt, g:UInt, b:UInt):Void;
 	
-	@:ammer.native("psmove_set_rumble")
-	public function setRumble(_:ammer.ffi.This, rumble:UInt):Void;
+	public function set_rumble(_:ammer.ffi.This, rumble:UInt):Void;
 	
-	@:ammer.native("psmove_update_leds")
-	public function updateLeds(_:ammer.ffi.This):PSMoveUpdateResult;
+	public function update_leds(_:ammer.ffi.This):PSMoveUpdateResult;
 	
-	@:ammer.native("psmove_get_buttons")
-	public function getButtons(_:ammer.ffi.This):UInt;
+	public function get_buttons(_:ammer.ffi.This):UInt;
+	
+	public function get_trigger(_:ammer.ffi.This):UInt;
+	
+	public function enable_orientation(_:ammer.ffi.This, enable:Bool):Void;
+	
+	public function has_orientation(_:ammer.ffi.This):Bool;
 	
 	@:ammer.c.prereturn("
 		int x, y, z;
@@ -65,7 +65,33 @@ class PsMove extends ammer.Pointer<"PSMove", PsMoveApi> {
 		axis->y = y;
 		axis->z = z;")
 	@:ammer.c.return("axis")
-    public function getSensor(_:ammer.ffi.This, sensor:UInt):AxisVector;
+    public function get_sensor(_:ammer.ffi.This, sensor:PsMoveSensor):AxisVector;
+	
+	@:ammer.c.prereturn("
+		int x, y, z;
+		if (arg_1 == 0) {
+			psmove_get_accelerometer_frame(arg_0, arg_2, &x, &y, &z);
+		} else if (arg_1 == 1) {
+			psmove_get_gyroscope_frame(arg_0, arg_2, &x, &y, &z);
+		}
+		
+		PSMove_3AxisVector * axis = malloc(sizeof(PSMove_3AxisVector));
+		axis->x = x;
+		axis->y = y;
+		axis->z = z;")
+	@:ammer.c.return("axis")
+    public function get_sensor_frame(_:ammer.ffi.This, sensor:PsMoveSensor, frame:PSMoveFrame):AxisVector;
+	
+	@:ammer.c.prereturn("
+		int x, y, z, w;
+		psmove_get_orientation(arg_0, &w, &x, &y, &z);
+		
+		PSMove_3AxisVector * axis = malloc(sizeof(PSMove_3AxisVector));
+		axis->x = x;
+		axis->y = y;
+		axis->z = z;")
+	@:ammer.c.return("axis")
+    public function get_orientation(_:ammer.ffi.This):AxisVector;
 	
 	@:ammer.c.prereturn("free(arg_0);")
 	@:ammer.c.return("true")
@@ -104,8 +130,13 @@ enum abstract PSMoveUpdateResult(UInt) from UInt {
     var UpdateIgnored; /*!< LEDs don't need updating, see psmove_set_rate_limiting() */
 }
 
-enum abstract PsMoveSensor(UInt) to UInt {
+enum abstract PsMoveSensor(UInt) to UInt from UInt {
 	var Accelerometer = 0;
 	var Gyroscope;
 	var Magnetometer;
+}
+
+enum abstract PSMoveFrame(UInt) to UInt from UInt {
+	var Frame_FirstHalf = 0; /*!< The older frame */
+	var Frame_SecondHalf; /*!< The most recent frame */
 }
