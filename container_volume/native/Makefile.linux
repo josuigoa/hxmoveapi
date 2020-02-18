@@ -1,9 +1,0 @@
-all: libhxmoveapi.so hxmoveapi.o
-
-libhxmoveapi.so: hxmoveapi.o
-	gcc -shared -fPIC -o lib/linux/libhxmoveapi.so lib/linux/hxmoveapi.o -lc -L lib/linux -lpsmoveapi
-
-hxmoveapi.o: hxmoveapi.cpp
-	g++ -c -fPIC -o lib/linux/hxmoveapi.o hxmoveapi.cpp
-
-.PHONY: all

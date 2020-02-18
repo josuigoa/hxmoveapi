@@ -1,6 +1,6 @@
 -lib ammer
 -D analyzer-optimize
--D ammer.lib.hxmoveapi.include=native/include
--D ammer.lib.hxmoveapi.headers=hxmoveapi.h
+-D ammer.lib.psmoveapi.include=native/include
+-D ammer.lib.psmoveapi.headers=psmove.h
 -cp src
 -main Main

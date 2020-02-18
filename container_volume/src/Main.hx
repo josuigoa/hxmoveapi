@@ -74,13 +74,13 @@ class Main {
             move.updateLeds();
             
             if (b & PsMoveButton.MOVE > 0) {
-                var axis = move.getAccelerometer();
+                var axis = move.getSensor(Accelerometer);
                 trace('accel: [${axis.getX()}, ${axis.getY()}, ${axis.getZ()}]');
                 
-                axis = move.getGyroscope();
+                axis = move.getSensor(Gyroscope);
                 trace('accel: [${axis.getX()}, ${axis.getY()}, ${axis.getZ()}]');
                 
-                axis = move.getMagnetometer();
+                axis = move.getSensor(Magnetometer);
                 trace('accel: [${axis.getX()}, ${axis.getY()}, ${axis.getZ()}]');
             }
         }

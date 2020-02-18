@@ -40,7 +40,7 @@ RUN set -ex \
     && rm psmoveapi.tar.gz \
     && mkdir -p /usr/local/share/host/native/psmoveapi/include \
     && mkdir -p /usr/local/share/host/native/lib/linux \
-	&& cp -R /usr/src/psmoveapi/include /usr/local/share/host/native/psmoveapi/include \
+	&& cp -R /usr/src/psmoveapi/include /usr/local/share/host/native/include \
     && cp /usr/src/psmoveapi/lib/* /usr/local/share/host/native/lib/linux \
     && rm -r /usr/src/psmoveapi \
     && haxelib git ammer https://github.com/Aurel300/ammer.git

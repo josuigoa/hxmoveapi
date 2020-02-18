@@ -4,7 +4,7 @@ import ammer.Library;
 import haxe.io.Bytes;
 import ammer.ffi.*;
 
-class PsMoveApi extends Library<"hxmoveapi"> {
+class PsMoveApi extends Library<"psmoveapi"> {
 	
 	@:ammer.native("PSMOVEAPI_VERSION_MAJOR") public static var VERSION_MAJOR:Int;
 	@:ammer.native("PSMOVEAPI_VERSION_MINOR") public static var VERSION_MINOR:Int;
@@ -21,15 +21,15 @@ class PsMoveApi extends Library<"hxmoveapi"> {
 	
 	// I put this here because it seems that ammer ignores the
 	// ammer.Pointer classes that are not referenced here.
-	// Comment these lines and compiler will fail.
-	@:ammer.native("create_axis")
-	static function create_axis(x:Int, y:Int, z:Int):AxisData;
+	// If these lines are commented compiling fails.
+	@:ammer.c.return("malloc(sizeof(PSMove_3AxisVector))")
+	static function create_axis(x:Int, y:Int, z:Int):AxisVector;
 	
 }
 
 class PsMove extends ammer.Pointer<"PSMove", PsMoveApi> {
 	
-	@:ammer.native("psmove_is_null")
+	@:ammer.c.return("arg_0 == NULL")
 	public function isNull(_:ammer.ffi.This):Bool;
 	
 	@:ammer.native("psmove_get_serial")
@@ -50,28 +50,37 @@ class PsMove extends ammer.Pointer<"PSMove", PsMoveApi> {
 	@:ammer.native("psmove_get_buttons")
 	public function getButtons(_:ammer.ffi.This):UInt;
 	
-	@:ammer.native("get_accelerometer")
-    public function getAccelerometer(_:ammer.ffi.This):AxisData;
+	@:ammer.c.prereturn("
+		int x, y, z;
+		if (arg_1 == 0) {
+			psmove_get_accelerometer(arg_0, &x, &y, &z);
+		} else if (arg_1 == 1) {
+			psmove_get_gyroscope(arg_0, &x, &y, &z);
+		} else {
+			psmove_get_magnetometer(arg_0, &x, &y, &z);
+		}
+		
+		PSMove_3AxisVector * axis = malloc(sizeof(PSMove_3AxisVector));
+		axis->x = x;
+		axis->y = y;
+		axis->z = z;")
+	@:ammer.c.return("axis")
+    public function getSensor(_:ammer.ffi.This, sensor:UInt):AxisVector;
 	
-	@:ammer.native("get_gyroscope")
-    public function getGyroscope(_:ammer.ffi.This):AxisData;
-	
-	@:ammer.native("get_magnetometer")
-    public function getMagnetometer(_:ammer.ffi.This):AxisData;
-	
-	@:ammer.native("free_psmove")
-    public function free(_:ammer.ffi.This):Void;
+	@:ammer.c.prereturn("free(arg_0);")
+	@:ammer.c.return("true")
+	public function free(_:ammer.ffi.This):Bool;
 }
 
-class AxisData extends ammer.Pointer<"axis_data", PsMoveApi> {
+class AxisVector extends ammer.Pointer<"PSMove_3AxisVector", PsMoveApi> {
 	
-	@:ammer.native("axis_get_x")
+	@:ammer.c.return("arg_0->x")
 	public function getX(_:ammer.ffi.This):Int;
 	
-	@:ammer.native("axis_get_y")
+	@:ammer.c.return("arg_0->y")
 	public function getY(_:ammer.ffi.This):Int;
 	
-	@:ammer.native("axis_get_z")
+	@:ammer.c.return("arg_0->z")
 	public function getZ(_:ammer.ffi.This):Int;
 }
 
@@ -93,4 +102,10 @@ enum abstract PSMoveUpdateResult(UInt) from UInt {
 	var UpdateFailed = 0; /*!< Could not update LEDs */
     var UpdateSuccess; /*!< LEDs successfully updated */
     var UpdateIgnored; /*!< LEDs don't need updating, see psmove_set_rate_limiting() */
+}
+
+enum abstract PsMoveSensor(UInt) to UInt {
+	var Accelerometer = 0;
+	var Gyroscope;
+	var Magnetometer;
 }
