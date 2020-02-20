@@ -68,7 +68,7 @@ class PsMove extends ammer.Pointer<"PSMove", PsMoveApi> {
     public function get_sensor(_:ammer.ffi.This, sensor:PsMoveSensor):AxisVector;
 	
 	@:ammer.c.prereturn("
-		int x, y, z;
+		float x, y, z;
 		if (arg_1 == 0) {
 			psmove_get_accelerometer_frame(arg_0, arg_2, &x, &y, &z);
 		} else if (arg_1 == 1) {
@@ -83,19 +83,24 @@ class PsMove extends ammer.Pointer<"PSMove", PsMoveApi> {
     public function get_sensor_frame(_:ammer.ffi.This, sensor:PsMoveSensor, frame:PSMoveFrame):AxisVector;
 	
 	@:ammer.c.prereturn("
-		int x, y, z, w;
+		float x, y, z, w;
 		psmove_get_orientation(arg_0, &w, &x, &y, &z);
 		
-		PSMove_3AxisVector * axis = malloc(sizeof(PSMove_3AxisVector));
-		axis->x = x;
-		axis->y = y;
-		axis->z = z;")
-	@:ammer.c.return("axis")
-    public function get_orientation(_:ammer.ffi.This):AxisVector;
+		float arr[] = {x, y, z, w};
+		char *result;
+		memcpy(result, arr, 100);")
+	@:ammer.c.return("result")
+    public function get_orientation(_:ammer.ffi.This):Quat;
 	
-	@:ammer.c.prereturn("free(arg_0);")
-	@:ammer.c.return("true")
-	public function free(_:ammer.ffi.This):Bool;
+    public function get_transformed_magnetometer_direction(_:ammer.ffi.This, outAxis:AxisVector):Void;
+	
+    public function get_transformed_accelerometer_frame_3axisvector(_:ammer.ffi.This, frame:PSMoveFrame, outAxis:AxisVector):Void;
+    
+	public function get_transformed_accelerometer_frame_direction(_:ammer.ffi.This, frame:PSMoveFrame, outAxis:AxisVector):Void;
+	
+    public function get_transformed_gyroscope_frame_3axisvector(_:ammer.ffi.This, frame:PSMoveFrame, outAxis:AxisVector):Void;
+	
+	public function disconnect(_:ammer.ffi.This):Void;
 }
 
 class AxisVector extends ammer.Pointer<"PSMove_3AxisVector", PsMoveApi> {
@@ -139,4 +144,14 @@ enum abstract PsMoveSensor(UInt) to UInt from UInt {
 enum abstract PSMoveFrame(UInt) to UInt from UInt {
 	var Frame_FirstHalf = 0; /*!< The older frame */
 	var Frame_SecondHalf; /*!< The most recent frame */
+}
+
+@:forward
+abstract Quat(Array<Float>) from Array<Float> {
+	
+	@:from static inline public function fromCString(s:ammer.conv.CString):Quat
+		return Quat.fromString(s);
+		
+	@:from static inline public function fromString(s:String):Quat
+		return [for (f in s.split(',')) Std.parseFloat(f)];
 }
