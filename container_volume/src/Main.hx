@@ -67,6 +67,15 @@ class Main {
                 g = 192;
                 b = 203;
             }
+            if (btn & PsMoveButton.T > 0) {
+                r = b = move.get_trigger();
+                move.set_rumble(r);
+                haxe.Timer.delay(() -> {
+                    move.set_rumble(0);
+                    move.set_leds(0, 0, 0);
+                    move.update_leds();
+                }, 3000);
+            }
 
             move.set_leds(r, g, b);
             
@@ -81,12 +90,6 @@ class Main {
                 
                 axis = move.get_sensor(Magnetometer);
                 trace('magneto: [${axis.getX()}, ${axis.getY()}, ${axis.getZ()}]');
-            } else if (btn & PsMoveButton.T > 0) {
-                move.set_rumble(move.get_trigger());
-                haxe.Timer.delay(() -> {
-                    move.set_rumble(0);
-                    move.update_leds();
-                }, 3000);
             }
         }
     }
