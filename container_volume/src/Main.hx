@@ -49,41 +49,44 @@ class Main {
         if (move.poll() == 0)
             return;
         
-        var b = move.get_buttons();
+        var btn = move.get_buttons();
         
-        if (b != 0) {
-            
-            trace('button pressed: $b');
+        if (btn != 0) {
             
             var r = 0;
             var g = 0;
             var b = 0;
-            if (b & PsMoveButton.TRIANGLE > 0)
+            if (btn & PsMoveButton.TRIANGLE > 0)
                 g = 255;
-            if (b & PsMoveButton.CIRCLE > 0)
+            if (btn & PsMoveButton.CIRCLE > 0)
                 r = 255;
-            if (b & PsMoveButton.CROSS > 0)
+            if (btn & PsMoveButton.CROSS > 0)
                 b = 255;
-            if (b & PsMoveButton.SQUARE > 0) {
+            if (btn & PsMoveButton.SQUARE > 0) {
                 r = 255;
                 g = 192;
                 b = 203;
             }
+
             move.set_leds(r, g, b);
             
             move.update_leds();
             
-            if (b & PsMoveButton.MOVE > 0) {
+            if (btn & PsMoveButton.MOVE > 0) {
                 var axis = move.get_sensor(Accelerometer);
                 trace('accel: [${axis.getX()}, ${axis.getY()}, ${axis.getZ()}]');
                 
                 axis = move.get_sensor(Gyroscope);
-                trace('accel: [${axis.getX()}, ${axis.getY()}, ${axis.getZ()}]');
+                trace('gyro: [${axis.getX()}, ${axis.getY()}, ${axis.getZ()}]');
                 
                 axis = move.get_sensor(Magnetometer);
-                trace('accel: [${axis.getX()}, ${axis.getY()}, ${axis.getZ()}]');
-            } else if (b & PsMoveButton.T > 0) {
+                trace('magneto: [${axis.getX()}, ${axis.getY()}, ${axis.getZ()}]');
+            } else if (btn & PsMoveButton.T > 0) {
                 move.set_rumble(move.get_trigger());
+                haxe.Timer.delay(() -> {
+                    move.set_rumble(0);
+                    move.update_leds();
+                }, 3000);
             }
         }
     }
