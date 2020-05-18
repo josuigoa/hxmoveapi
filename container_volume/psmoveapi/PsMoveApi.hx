@@ -19,7 +19,7 @@ class PsMoveApi extends Library<"psmoveapi"> {
 	public static function connect_by_id(index:UInt):PsMove;
 	
 	// I put this here because it seems that ammer ignores the
-	// ammer.Pointer classes that are not referenced here.
+	// ammer.Pointer classes that are not referenced in the library.
 	// If these lines are commented compiling fails.
 	@:ammer.c.return("malloc(sizeof(PSMove_3AxisVector))")
 	static function create_axis(x:Int, y:Int, z:Int):AxisVector;

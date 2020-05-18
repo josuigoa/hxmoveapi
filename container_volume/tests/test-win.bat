@@ -1,10 +1,10 @@
 @echo off
 
 echo "testing hl ..."
-haxe build-hl-win.hxml
+haxe hl-win.hxml
 if errorrlevel 0 (
     cd bin
     cp ../native/lib/win/hxmoveapi.dll .
-    hl hxmoveapi.hl
+    hl game.hl
     cd ..
 )

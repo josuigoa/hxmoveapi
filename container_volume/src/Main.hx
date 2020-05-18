@@ -1,96 +1,124 @@
 import psmoveapi.PsMoveApi;
 
+enum State {
+	Simon;
+	PlayersAsleep;
+	PlayersAwake;
+	Fail;
+}
+
 class Main {
-    
-    static var move:PsMove;
-    
-    static public function main() {
-        
+	static var lastTimeStamp = haxe.Timer.stamp();
+	static var noInteractionTime:Float = 0;
+
+	static var simonValues:Array<UInt>;
+	static var simonValuesIndex:Int = -1;
+	static var simonValuesDelayMs:UInt = 1000;
+
+	static var players:Array<Player>;
+	static var lastPlayerOn:Player = null;
+
+	static var CURRENT_STATE:State;
+
+	static public function main() {
+		
         var currentVersion = PsMoveApi.VERSION_MAJOR << 16 |
                             PsMoveApi.VERSION_MINOR << 8 |
                             PsMoveApi.VERSION_PATCH << 0;
-        var inited = PsMoveApi.init(currentVersion);
-        trace('inited: $inited');
-        if (!inited) {
-            trace('PS Move API init failed (wrong version?)');
-            return;
-        }
-        
-        var connectedCount = PsMoveApi.count_connected();
-        trace('connectedCount: $connectedCount');
-        
-        move = PsMoveApi.connect_by_id(0);
-        trace('connected: $move');
-        if (move.isNull())
-            return;
-        
-        var serial = move.get_serial();
-        trace('serial $serial');
-        
-        move.set_rumble(100);
-        haxe.Timer.delay(() -> {
-            move.set_rumble(0);
-            move.update_leds();
-        }, 1000);
-        
-        move.set_leds(0, 255, 0);
-        haxe.Timer.delay(() -> {
-            move.set_leds(0, 0, 0);
-            move.update_leds();
-        }, 3000);
-        
-        move.update_leds();
-        
-        haxe.MainLoop.add(update);
-    }
-    
-    static function update() {
-        
-        if (move.poll() == 0)
-            return;
-        
-        var btn = move.get_buttons();
-        
-        if (btn != 0) {
-            
-            var r = 0;
-            var g = 0;
-            var b = 0;
-            if (btn & PsMoveButton.TRIANGLE > 0)
-                g = 255;
-            if (btn & PsMoveButton.CIRCLE > 0)
-                r = 255;
-            if (btn & PsMoveButton.CROSS > 0)
-                b = 255;
-            if (btn & PsMoveButton.SQUARE > 0) {
-                r = 255;
-                g = 192;
-                b = 203;
-            }
-            if (btn & PsMoveButton.T > 0) {
-                r = b = move.get_trigger();
-                move.set_rumble(r);
-                haxe.Timer.delay(() -> {
-                    move.set_rumble(0);
-                    move.set_leds(0, 0, 0);
-                    move.update_leds();
-                }, 3000);
-            }
+		var inited = PsMoveApi.init(currentVersion);
+		if (!inited) {
+			trace('PS Move API init failed (wrong version?)');
+			return;
+		}
 
-            move.set_leds(r, g, b);
-            
-            move.update_leds();
-            
-            if (btn & PsMoveButton.MOVE > 0) {
-                var axis = move.get_sensor(Accelerometer);
-                trace('accel: [${axis.getX()}, ${axis.getY()}, ${axis.getZ()}]');
-                
-                axis = move.get_sensor(Gyroscope);
-                trace('gyro: [${axis.getX()}, ${axis.getY()}, ${axis.getZ()}]');
-                
-                axis = move.get_sensor(Magnetometer);
-                trace('magneto: [${axis.getX()}, ${axis.getY()}, ${axis.getZ()}]');
-            }
-        }
-    }
+		var connectedCount = PsMoveApi.count_connected();
+		if (connectedCount == 0) {
+			trace('No PsMove controller connected, exiting...');
+			Sys.exit(0);
+		} else if (connectedCount == 1) {
+			trace('If only is one PsMove controller the game will be a bit boring, exiting...');
+			Sys.exit(0);
+		}
+
+		players = [];
+		simonValues = [];
+        var move:PsMove;
+
+		for (i in 0...connectedCount) {
+			move = PsMoveApi.connect_by_id(i);
+			if (move.isNull())
+				continue;
+
+			players.push(new Player(move, Std.random(255), Std.random(255), Std.random(255)));
+		}
+
+		CURRENT_STATE = Simon;
+
+		haxe.MainLoop.add(update);
+	}
+
+	static function fail() {
+		trace('fail!');
+	}
+
+	static function update() {
+		switch CURRENT_STATE {
+			case Simon:
+				lastPlayerOn = null;
+				noInteractionTime = 0;
+				simonValuesIndex = -1;
+				simonValues.push(Std.random(players.length));
+				var p;
+				for (value in simonValues) {
+					p = players[value];
+					p.on();
+					Sys.sleep(simonValuesDelayMs);
+					p.off();
+				}
+				CURRENT_STATE = PlayersAsleep;
+
+			case PlayersAsleep:
+				simonValuesIndex++;
+				lastPlayerOn = null;
+				var newTime = haxe.Timer.stamp();
+				var elapsedTime = newTime - lastTimeStamp;
+				lastTimeStamp = newTime;
+
+				for (p in players) {
+					if (p.update()) { // a player has clicked the Move button
+						CURRENT_STATE = PlayersAwake;
+						return;
+					}
+				}
+
+				noInteractionTime += elapsedTime;
+				if (noInteractionTime > simonValuesDelayMs)
+					CURRENT_STATE = Fail;
+
+			case PlayersAwake:
+				if (lastPlayerOn == null) {
+					var p;
+					for (i in 0...players.length) {
+						p = players[i];
+						if (p.update()) {
+							if (i != simonValuesIndex) // is not the right player
+								CURRENT_STATE = Fail;
+							else if (lastPlayerOn != null) // more than one lights turned on
+								CURRENT_STATE = Fail;
+
+							lastPlayerOn = p;
+						}
+					}
+				} else if (!lastPlayerOn.isOn) {
+					CURRENT_STATE = PlayersAsleep;
+				}
+
+				if (simonValuesIndex > simonValues.length) {
+					CURRENT_STATE = Simon;
+				}
+
+			case Fail:
+				trace('failed!');
+		}
+	}
 }

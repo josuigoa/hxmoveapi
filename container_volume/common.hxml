@@ -1,6 +1,9 @@
 -lib ammer
+
+-cp src
+-main Main
+# -main Demo
+
 -D analyzer-optimize
 -D ammer.lib.psmoveapi.include=native/include
 -D ammer.lib.psmoveapi.headers=psmove.h
--cp src
--main Main
