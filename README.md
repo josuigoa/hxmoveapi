@@ -2,6 +2,12 @@
 
 Haxe binding for [psmoveapi](https://github.com/thp/psmoveapi). Powered by [ammer](https://github.com/Aurel300/ammer).
 
+## WIP
+
+This repository is not finished. It's only really tested on OSX. Compiles and starts on Linux (tested with docker, without connecting any PsMove). I could not get windows running.
+
+The `container_volume/src/Demo.hx` application could not be tested at all, it only compiles.
+
 ## Prerequisites
 
 Download the [binaries of psmoveapi](https://github.com/thp/psmoveapi/releases) and unzip them:
